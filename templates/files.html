@@ -6,14 +6,15 @@
 
 {% block content %}
     {% if details %}
+        <a href="/?page-location={{details['prev_path']}}">../</a>
         <h2>Files</h2>
             {% for files in details['file_name'] %}
-                <a href="/?page-location='{{files if details else 'No files'}}'">{{files}}</a>
+                <a href="/?page-location={{details['prev_path']}}/{{files}}">{{files}}</a>
                 <br>
             {% endfor %}
         <h2>Directories</h2>
             {% for files in details['dir_names']  if details %}
-                <a href="/?page-location='{{files if details else 'No files'}}'">{{files}}</a>
+                <a href="/?page-location={{details['prev_path']}}/{{files}}">{{files}}</a>
                 <br>
             {% endfor %}
     {% endif %}
