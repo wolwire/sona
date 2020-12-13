@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block header %}
+    <h1>{{details['header'] if details else "Home"}}</h1>
+{% endblock %}
+
+{% block content %}
+    {% if details %}
+        <h2>Files</h2>
+            {% for files in details['file_name'] %}
+                <a href="/?page-location='{{files if details else 'No files'}}'">{{files}}</a>
+                <br>
+            {% endfor %}
+        <h2>Directories</h2>
+            {% for files in details['dir_names']  if details %}
+                <a href="/?page-location='{{files if details else 'No files'}}'">{{files}}</a>
+                <br>
+            {% endfor %}
+    {% endif %}
+{% endblock %}
