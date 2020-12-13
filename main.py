@@ -13,7 +13,7 @@ def check_directory(path):
 
 def get_path(basepath, page_location):
     if page_location:
-        page_location = page_location.strip(" ,.\"\'")
+        page_location = page_location.strip("\"\'")
         path = basepath + page_location
     else:
         path = basepath
