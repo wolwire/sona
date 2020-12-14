@@ -2,8 +2,10 @@ import os
 import re
 from flask import Flask, request, render_template, flash, get_flashed_messages, url_for, send_from_directory
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='static')
 basepath = "/Users/mayank"
+host = '0.0.0.0'
+port = 4000
 
 def check_directory(path):
     if not(os.path.exists(path)) and re.match(f"^{basepath}", path):
@@ -59,18 +61,17 @@ def play_videos():
 
     if os.path.isfile(current_path) and current_path.lower().endswith(('.mkv', '.mp4', '.mpeg', '.mov', '.avi')):
         filename, file_extension = os.path.splitext(current_path)
-        details = {"path": f"/videos?page-location={page_location}", "type": f"video/{file_extension.lstrip('.')}"}
+        details = {"path": f"/videos{page_location}"}
         return render_template("video.html", details=details)
     else:
         flash(f"This is a file {current_path}")
         return render_template("video.html")
 
-@app.route('/videos')
-def download_file():
-    page_location = request.args.get("page-location")
-    if page_location:
-        page_location = page_location.lstrip('/')
-    else:
+
+@app.route('/videos/<path:page_location>')
+def download_file(page_location):
+    print(page_location)
+    if not page_location:
         flash(f"page-location parameter is required")
         return render_template("base.html")
     return send_from_directory(basepath, page_location, as_attachment=True)
@@ -79,4 +80,4 @@ def download_file():
 if __name__ == '__main__':
     app.secret_key = 'super secret key'
     app.config['SESSION_TYPE'] = 'filesystem'
-    app.run(debug=True, host='0.0.0.0', port=4000)
+    app.run(debug=True, host=host, port=port)
