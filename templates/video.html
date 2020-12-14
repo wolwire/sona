@@ -1,11 +1,16 @@
 {% extends 'base.html' %}
-
+{% block scripts %}
+    <link href="https://vjs.zencdn.net/7.10.2/video-js.css" rel="stylesheet" />
+    <script src="https://vjs.zencdn.net/7.10.2/video.min.js"></script>
+{% endblock %}
 {% block header %}
     <h1>Play Video</h1>
 {% endblock %}
 
 {% block content %}
     {% if details %}
-        <iframe src="{{ url_for(details['base'], file_name=details['page_location']) }}" width="853" height="480" frameborder="0" allowfullscreen></iframe>
+    <video id="my-video" class="video-js" controls preload="auto" width="640" height="264" data-setup="{}">
+        <source src="{{ details['path'] }}" type="{{ details['type'] }}"/>
+    </video>
     {% endif %}
 {% endblock %}
