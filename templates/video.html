@@ -10,7 +10,7 @@
 {% block content %}
     {% if details %}
     <video id="my-video" class="video-js" controls preload="auto" width="640" height="264" data-setup="{}">
-        <source src="{{ details['path'] }}" type="video/mp4"/>
+        <source src="{{ details['path'] }}" type="{{ details['type'] }}"/>
     </video>
     {% endif %}
 {% endblock %}

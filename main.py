@@ -1,11 +1,18 @@
 import os
 import re
 from flask import Flask, request, render_template, flash, get_flashed_messages, url_for, send_from_directory
+import ffmpeg
+import json
+
+with open('config.local.json') as config_file:
+    config_data = json.load(config_file)
+
+basepath = config_data['basepath']
+host = config_data['host']
+port = config_data['port']
 
 app = Flask(__name__, static_folder='static')
-basepath = "/Users/mayank"
-host = '0.0.0.0'
-port = 4000
+
 
 def check_directory(path):
     if not(os.path.exists(path)) and re.match(f"^{basepath}", path):
@@ -33,7 +40,6 @@ def list_directories():
         flash(f"Wrong Directory")
         return render_template("files.html")
 
-
     if os.path.isfile(current_path):
         flash(f"This is a file {current_path}")
         return render_template("files.html")
@@ -59,9 +65,11 @@ def play_videos():
     page_location = page_location if page_location else ""
     current_path = get_path(basepath, page_location)
 
-    if os.path.isfile(current_path) and current_path.lower().endswith(('.mkv', '.mp4', '.mpeg', '.mov', '.avi')):
-        filename, file_extension = os.path.splitext(current_path)
-        details = {"path": f"/videos{page_location}"}
+    if os.path.isfile(current_path) and current_path.lower().endswith(('.mkv', '.mp4','.mov')):
+        details = {"path": f"/videos{page_location}", "type": "video/mp4"}
+        return render_template("video.html", details=details)
+    elif os.path.isfile(current_path) and current_path.lower().endswith(('.avi')):
+        details = {"path": f"/videos{page_location}", "type": "video/avi"}
         return render_template("video.html", details=details)
     else:
         flash(f"This is a file {current_path}")
@@ -70,11 +78,16 @@ def play_videos():
 
 @app.route('/videos/<path:page_location>')
 def download_file(page_location):
-    print(page_location)
     if not page_location:
         flash(f"page-location parameter is required")
         return render_template("base.html")
-    return send_from_directory(basepath, page_location, as_attachment=True)
+
+    current_path = get_path(basepath, page_location)
+    filename, file_extension = os.path.splitext(current_path)
+    # stream = ffmpeg.input(current_path)
+    # stream = ffmpeg.output(stream, f'{filename}.mp4')
+    # ffmpeg.run(stream)
+    return send_from_directory(basepath, current_path, as_attachment=True)
 
 
 if __name__ == '__main__':
