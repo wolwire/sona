@@ -65,11 +65,14 @@ def play_videos():
     page_location = page_location if page_location else ""
     current_path = get_path(basepath, page_location)
 
-    if os.path.isfile(current_path) and current_path.lower().endswith(('.mkv', '.mp4','.mov')):
+    if os.path.isfile(current_path) and current_path.lower().endswith(('.mp4','.mov')):
         details = {"path": f"/videos{page_location}", "type": "video/mp4"}
         return render_template("video.html", details=details)
     elif os.path.isfile(current_path) and current_path.lower().endswith(('.avi')):
         details = {"path": f"/videos{page_location}", "type": "video/avi"}
+        return render_template("video.html", details=details)
+    elif os.path.isfile(current_path) and current_path.lower().endswith(('.mkv')):
+        details = {"path": f"/videos{page_location}", "type": "video/x-matroska; codecs='theora, vorbis'"}
         return render_template("video.html", details=details)
     else:
         flash(f"This is a file {current_path}")
@@ -87,7 +90,7 @@ def download_file(page_location):
     # stream = ffmpeg.input(current_path)
     # stream = ffmpeg.output(stream, f'{filename}.mp4')
     # ffmpeg.run(stream)
-    return send_from_directory(basepath, current_path, as_attachment=True)
+    return send_from_directory(basepath, page_location, as_attachment=True)
 
 
 if __name__ == '__main__':

@@ -12,5 +12,8 @@
     <video id="my-video" class="video-js" controls preload="auto" width="640" height="264" data-setup="{}">
         <source src="{{ details['path'] }}" type="{{ details['type'] }}"/>
     </video>
+    <embed id="divxplayer" type="video/divx" width="1024" height="768"
+       src ="{{ details['path'] }}" autoPlay=\"true\"
+       pluginspage=\"http://go.divx.com/plugin/download/\"></embed>
     {% endif %}
 {% endblock %}
