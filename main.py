@@ -72,7 +72,7 @@ def play_videos():
         details = {"path": f"/videos{page_location}", "type": "video/avi"}
         return render_template("video.html", details=details)
     elif os.path.isfile(current_path) and current_path.lower().endswith(('.mkv')):
-        details = {"path": f"/videos{page_location}", "type": "video/x-matroska; codecs='theora, vorbis'"}
+        details = {"path": f"/videos{page_location}", "type": "video/mp4"}
         return render_template("video.html", details=details)
     else:
         flash(f"This is a file {current_path}")
