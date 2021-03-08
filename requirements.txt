@@ -1,2 +1,5 @@
 flask
+flask-script
 ffmpeg-python
+opencv-python
+python-ffmpeg-video-streaming

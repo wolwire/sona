@@ -1,8 +1,10 @@
 {% extends 'base.html' %}
 {% block scripts %}
-    <link href="https://vjs.zencdn.net/7.10.2/video-js.css" rel="stylesheet" />
-    <script src="https://vjs.zencdn.net/7.10.2/video.min.js"></script>
+{#    <link href="https://vjs.zencdn.net/7.10.2/video-js.css" rel="stylesheet" />#}
+{#    <script src="https://vjs.zencdn.net/7.10.2/video.min.js"></script>#}
+    <script src="http://cdn.dashjs.org/latest/dash.all.min.js"></script>
 {% endblock %}
+
 {% block header %}
     <h1>Play Video</h1>
 {% endblock %}
@@ -10,10 +12,17 @@
 {% block content %}
     {% if details %}
     <video id="my-video" class="video-js" controls preload="auto" width="640" height="264" data-setup="{}">
-        <source src="{{ details['path'] }}" type="{{ details['type'] }}"/>
+{#        <source src="{{ details['path'] }}" type="{{ details['type'] }}"/>#}
     </video>
-    <embed id="divxplayer" type="video/divx" width="1024" height="768"
-       src ="{{ details['path'] }}" autoPlay=\"true\"
-       pluginspage=\"http://go.divx.com/plugin/download/\"></embed>
     {% endif %}
+    <script>
+    (function(){
+        var url = "{{ details['path'] }}";
+        var player = dashjs.MediaPlayer().create();
+        player.initialize(document.querySelector("#my-video"), url, true);
+    })();
+</script>
 {% endblock %}
+
+
+

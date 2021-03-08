@@ -1,8 +1,9 @@
 import os
 import re
 from flask import Flask, request, render_template, flash, get_flashed_messages, url_for, send_from_directory
-import ffmpeg
 import json
+import ffmpeg_streaming
+from ffmpeg_streaming import Formats
 
 with open('config.local.json') as config_file:
     config_data = json.load(config_file)
@@ -64,20 +65,12 @@ def play_videos():
     page_location = request.args.get("page-location")
     page_location = page_location if page_location else ""
     current_path = get_path(basepath, page_location)
-
-    if os.path.isfile(current_path) and current_path.lower().endswith(('.mp4','.mov')):
-        details = {"path": f"/videos{page_location}", "type": "video/mp4"}
-        return render_template("video.html", details=details)
-    elif os.path.isfile(current_path) and current_path.lower().endswith(('.avi')):
-        details = {"path": f"/videos{page_location}", "type": "video/avi"}
-        return render_template("video.html", details=details)
-    elif os.path.isfile(current_path) and current_path.lower().endswith(('.mkv')):
-        details = {"path": f"/videos{page_location}", "type": "video/mp4"}
-        return render_template("video.html", details=details)
-    else:
-        flash(f"This is a file {current_path}")
-        return render_template("video.html")
-
+    video = ffmpeg_streaming.input(current_path)
+    dash = video.dash(Formats.h264())
+    dash.auto_generate_representations()
+    dash.output(f"{basepath}/representation.mpd")
+    details = {"path": f"/videos/representation.mpd", "type": "video/mp4"}
+    return render_template("video.html", details=details)
 
 @app.route('/videos/<path:page_location>')
 def download_file(page_location):
@@ -86,14 +79,11 @@ def download_file(page_location):
         return render_template("base.html")
 
     current_path = get_path(basepath, page_location)
-    filename, file_extension = os.path.splitext(current_path)
-    # stream = ffmpeg.input(current_path)
-    # stream = ffmpeg.output(stream, f'{filename}.mp4')
-    # ffmpeg.run(stream)
     return send_from_directory(basepath, page_location, as_attachment=True)
 
 
 if __name__ == '__main__':
     app.secret_key = 'super secret key'
     app.config['SESSION_TYPE'] = 'filesystem'
+    # webbrowser.open(f"http://{host}:{port}")
     app.run(debug=True, host=host, port=port)
